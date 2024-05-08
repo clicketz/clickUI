@@ -1,2 +1,2 @@
 # clickUI
-Random UI changes that I've made over the years that friends may want access to
+Random UI changes/scripts that I've made over the years (very roughly) that friends may want access to

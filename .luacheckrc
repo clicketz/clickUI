@@ -3,6 +3,7 @@ max_line_length = false
 exclude_files = {
     ".luacheckrc",
     "Libs/",
+    "Modules/",
 }
 ignore = {
     "11./SLASH_.*", -- slash handler
@@ -49,8 +50,10 @@ globals = {
     "C_CraftingOrders",
     "C_CurrencyInfo",
     "C_Item",
+    "C_PerksActivities",
     "C_Spell",
     "C_Timer",
+    "C_Traits",
     "C_TooltipInfo",
     "C_TradeSkillUI",
     "SlashCmdList",
@@ -58,6 +61,7 @@ globals = {
     -- Functions
     "abs",
     "BreakUpLargeNumbers",
+    "ChatFrame_RemoveChannel",
     "CompactUnitFrame_UpdateAuras",
     "CooldownFrame_Clear",
     "CooldownFrame_Set",
@@ -67,6 +71,7 @@ globals = {
     "debugprofilestop",
     "floor",
     "format",
+    "GetAddOnInfo",
     "GetAddOnMetadata",
     "GetArchaeologyRaceInfo",
     "GetBuildInfo",
@@ -94,6 +99,7 @@ globals = {
     "next",
     "nop",
     "PlaySoundFile",
+    "RunNextFrame",
     "SecureButton_GetModifiedUnit",
     "SecureButton_GetUnit",
     "SendChatMessage",
@@ -102,9 +108,11 @@ globals = {
     "SetVertexColor",
     "StaticPopup_Show",
     "time",
+    "UnitAffectingCombat",
     "UnitAura",
     "UnitBuff",
     "UnitClass",
+    "UnitGroupRolesAssigned",
     "UnitGUID",
     "UnitIsPlayer",
     "UnitName",
