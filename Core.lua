@@ -287,7 +287,7 @@ PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -75)
 PetFrame:SetPoint("BOTTOM", PlayerFrame, "TOP", 50, 50)
 
 -- needed for easy frames in retail
-if select(4, GetAddOnInfo("EasyFrames")) then
+if select(4, C_AddOns.GetAddOnInfo("EasyFrames")) then
     local p = CreateFrame("Frame")
     p:SetScript("OnEvent", function()
         PetFrame:EnableMouse(nil)
