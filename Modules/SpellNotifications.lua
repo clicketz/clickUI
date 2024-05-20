@@ -2,7 +2,7 @@ local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE
 local COMBATLOG_OBJECT_TYPE_GUARDIAN = COMBATLOG_OBJECT_TYPE_GUARDIAN
 local COMBATLOG_OBJECT_REACTION_HOSTILE = COMBATLOG_OBJECT_REACTION_HOSTILE
 local bit_band = bit.band
-local playerGUID, defaultIcon, groundingTotemNameLocalized
+local playerGUID, defaultIcon, groundingTotemNameLocalized, msgFrame
 
 local MISS_TYPE_DEST = {
     ["ABSORB"] = false,
@@ -36,6 +36,20 @@ local ACTION_TYPE = {
     ["SPELL_STOLEN"] = "Stole",
 }
 
+local function SetupMessageFrame()
+    if not msgFrame then
+        msgFrame = CreateFrame("ScrollingMessageFrame", "clickUI_MessageFrame", UIParent)
+        msgFrame:SetFontObject("NumberFont_Outline_Large")
+        msgFrame:SetSize(500, 500)
+        msgFrame:SetPoint("CENTER")
+        msgFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+        msgFrame:SetTimeVisible(4)
+        msgFrame:SetMaxLines(5)
+        msgFrame:SetIndentedWordWrap(true)
+        msgFrame:SetInsertMode(SCROLLING_MESSAGE_FRAME_INSERT_MODE_TOP)
+    end
+end
+
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function(self, event, ...)
@@ -47,12 +61,12 @@ f:SetScript("OnEvent", function(self, event, ...)
             if destGUID == playerGUID then
                 if MISS_TYPE_DEST[extraArg4] then
                     local icon = select(3, GetSpellInfo(extraArg1)) or defaultIcon
-                    UIErrorsFrame:AddMessage(format("Self->" .. extraArg4 .. ": " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
+                    msgFrame:AddMessage(format("Self->" .. extraArg4 .. ": " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
                 end
             elseif sourceGUID == playerGUID then
                 if MISS_TYPE_SOURCE[extraArg4] then
                     local icon = select(3, GetSpellInfo(extraArg1)) or defaultIcon
-                    UIErrorsFrame:AddMessage(format(extraArg4 .. ": " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
+                    msgFrame:AddMessage(format(extraArg4 .. ": " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
                 end
             end
 
@@ -62,7 +76,7 @@ f:SetScript("OnEvent", function(self, event, ...)
             and bit_band(destFlags, COMBATLOG_OBJECT_TYPE_GUARDIAN) > 0
             and bit_band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) > 0 then
                 local icon = select(3, GetSpellInfo(extraArg1)) or defaultIcon
-                UIErrorsFrame:AddMessage(format("Ground: " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
+                msgFrame:AddMessage(format("Ground: " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
             end
         end
 
@@ -73,7 +87,7 @@ f:SetScript("OnEvent", function(self, event, ...)
             and sourceGUID == playerGUID
             then
                 local icon = select(3, GetSpellInfo(extraArg1)) or defaultIcon
-                UIErrorsFrame:AddMessage(format("Deathed: " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
+                msgFrame:AddMessage(format("Deathed: " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
             end
         end
 
@@ -83,13 +97,14 @@ f:SetScript("OnEvent", function(self, event, ...)
 
             if action then
                 local icon = select(3, GetSpellInfo(extraArg4)) or defaultIcon
-                UIErrorsFrame:AddMessage(format("%s: " .. "|T" .. icon .. ":0|t" .. "%s", action, GetSpellInfo(extraArg4)))
+                msgFrame:AddMessage(format("%s: " .. "|T" .. icon .. ":0|t" .. "%s", action, GetSpellLink(extraArg4)))
             end
         end
     elseif event == "PLAYER_LOGIN" then
         playerGUID = UnitGUID("player")
         defaultIcon = select(3, GetSpellInfo(5024)) -- Chicken Icon
         groundingTotemNameLocalized = GetSpellInfo(204336)
+        SetupMessageFrame()
 
         self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
     end
