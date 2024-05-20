@@ -11,7 +11,6 @@ TaintLess.xml
 Core.lua
 
 Modules\AutoPurchaseDragonRidingTalents.lua
-Modules\Dispels.lua
 # Modules\EasyDelete.lua
 # Modules\FastLoot.lua
 Modules\Frames.lua
@@ -22,6 +21,7 @@ Modules\LossOfControl.lua
 # Modules\ObjectiveTracker.lua
 # Modules\RaidFrames.lua
 # Modules\SafeQueue.lua
+Modules\SpellNotifications.lua
 # Modules\Stats.lua
 # Modules\Test.lua
 # Modules\UnitFrames.lua
