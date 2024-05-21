@@ -23,12 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Luacheck
-        uses: nebularg/actions-luacheck@v1
-        with:
-          config: https://raw.githubusercontent.com/clicketz/wow-luacheckrc/mainline/.luacheckrc
-          args: "--no-color -q"
-          annotate: warning
+      - name: Pull global luacheckrc
+        run:
+          wget -O .luacheckrc https://raw.githubusercontent.com/clicketz/wow-luacheckrc/mainline/.luacheckrc
+
+      - name: Luacheck linter
+        uses: lunarmodules/luacheck@v1
 
       - name: Generate Changelog
         run: ./generate_changelog.sh
