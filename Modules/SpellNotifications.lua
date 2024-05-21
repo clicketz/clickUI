@@ -4,6 +4,8 @@ local COMBATLOG_OBJECT_REACTION_HOSTILE = COMBATLOG_OBJECT_REACTION_HOSTILE
 local bit_band = bit.band
 local playerGUID, defaultIcon, groundingTotemNameLocalized, msgFrame
 
+-- This will show if the player gets attacked into this type
+-- e.g. player immunes a cast with ice block
 local MISS_TYPE_DEST = {
     ["ABSORB"] = false,
     ["BLOCK"] = false,
@@ -17,15 +19,17 @@ local MISS_TYPE_DEST = {
     ["RESIST"] = true,
 }
 
+-- This will show if the player hitting into this type
+-- e.g. player attacks into an iced blocked mage
 local MISS_TYPE_SOURCE = {
     ["ABSORB"] = false,
     ["BLOCK"] = false,
     ["DEFLECT"] = true,
-    ["DODGE"] = false,
+    ["DODGE"] = true,
     ["EVADE"] = true,
-    ["IMMUNE"] = false,
+    ["IMMUNE"] = true,
     ["MISS"] = true,
-    ["PARRY"] = false,
+    ["PARRY"] = true,
     ["REFLECT"] = true,
     ["RESIST"] = true,
 }
