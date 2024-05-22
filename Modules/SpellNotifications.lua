@@ -57,11 +57,11 @@ end
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function(self, event, ...)
-    local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, extraArg1, extraArg2, extraArg3, extraArg4, extraArg5, extraArg6, extraArg7, extraArg8, extraArg9, extraArg10 = CombatLogGetCurrentEventInfo()
+    local timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, extraArg1, extraArg2, extraArg3, extraArg4, extraArg5, extraArg6, extraArg7, extraArg8, extraArg9, extraArg10 = CombatLogGetCurrentEventInfo()
 
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        if eventType == "SPELL_MISSED" then
-            -- Fade / Immunities / Reflects / Etc
+        -- Fade / Immunities / Reflects / Etc
+        if subevent == "SPELL_MISSED" then
             if destGUID == playerGUID then
                 if MISS_TYPE_DEST[extraArg4] then
                     local icon = select(3, GetSpellInfo(extraArg1)) or defaultIcon
@@ -73,19 +73,10 @@ f:SetScript("OnEvent", function(self, event, ...)
                     msgFrame:AddMessage(format(extraArg4 .. ": " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
                 end
             end
-
-            -- Grounding Totem
-            if destName == groundingTotemNameLocalized
-            and bit_band(destFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
-            and bit_band(destFlags, COMBATLOG_OBJECT_TYPE_GUARDIAN) > 0
-            and bit_band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) > 0 then
-                local icon = select(3, GetSpellInfo(extraArg1)) or defaultIcon
-                msgFrame:AddMessage(format("Ground: " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
-            end
         end
 
         -- Shadow Word: Death
-        if eventType == "SPELL_AURA_BROKEN_SPELL" then
+        if subevent == "SPELL_AURA_BROKEN_SPELL" then
             if extraArg4 == 32379 -- if sw: death
             and destGUID == playerGUID
             and sourceGUID == playerGUID
@@ -95,9 +86,20 @@ f:SetScript("OnEvent", function(self, event, ...)
             end
         end
 
+        -- Grounding Totem
+        if subevent == "SPELL_CAST_SUCCESS" or subevent == "SPELL_MISSED" then
+            if destName == groundingTotemNameLocalized
+            and bit_band(destFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
+            and bit_band(destFlags, COMBATLOG_OBJECT_TYPE_GUARDIAN) > 0
+            and bit_band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) > 0 then
+                local icon = select(3, GetSpellInfo(extraArg1)) or defaultIcon
+                msgFrame:AddMessage(format("Ground: " .. "|T" .. icon .. ":0|t" .. "%s", GetSpellLink(extraArg1)))
+            end
+        end
+
         -- Dispels / Kicks / Purges
         if sourceGUID == playerGUID or sourceGUID == UnitGUID("pet") then
-            local action = ACTION_TYPE[eventType]
+            local action = ACTION_TYPE[subevent]
 
             if action then
                 local icon = select(3, GetSpellInfo(extraArg4)) or defaultIcon
