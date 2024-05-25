@@ -2,7 +2,7 @@ local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE
 local COMBATLOG_OBJECT_TYPE_GUARDIAN = COMBATLOG_OBJECT_TYPE_GUARDIAN
 local COMBATLOG_OBJECT_REACTION_HOSTILE = COMBATLOG_OBJECT_REACTION_HOSTILE
 local bit_band = bit.band
-local playerGUID, defaultIcon, groundingTotemNameLocalized, msgFrame
+local playerGUID, petGUID, defaultIcon, groundingTotemNameLocalized, msgFrame
 
 -- This will show if the player gets attacked into this type
 -- e.g. player immunes a cast with ice block
@@ -56,10 +56,10 @@ end
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
-f:SetScript("OnEvent", function(self, event, ...)
-    local timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, extraArg1, extraArg2, extraArg3, extraArg4, extraArg5, extraArg6, extraArg7, extraArg8, extraArg9, extraArg10 = CombatLogGetCurrentEventInfo()
-
+f:SetScript("OnEvent", function(self, event)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        local timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, extraArg1, extraArg2, extraArg3, extraArg4, extraArg5, extraArg6, extraArg7, extraArg8, extraArg9, extraArg10 = CombatLogGetCurrentEventInfo()
+
         -- Fade / Immunities / Reflects / Etc
         if subevent == "SPELL_MISSED" then
             if destGUID == playerGUID then
@@ -87,7 +87,7 @@ f:SetScript("OnEvent", function(self, event, ...)
         end
 
         -- Grounding Totem
-        if subevent == "SPELL_CAST_SUCCESS" or subevent == "SPELL_MISSED" then
+        if subevent == "SPELL_CAST_SUCCESS" then
             if destName == groundingTotemNameLocalized
             and bit_band(destFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
             and bit_band(destFlags, COMBATLOG_OBJECT_TYPE_GUARDIAN) > 0
@@ -98,16 +98,17 @@ f:SetScript("OnEvent", function(self, event, ...)
         end
 
         -- Dispels / Kicks / Purges
-        if sourceGUID == playerGUID or sourceGUID == UnitGUID("pet") then
-            local action = ACTION_TYPE[subevent]
-
-            if action then
+        if subevent == "SPELL_DISPEL"
+        or subevent == "SPELL_INTERRUPT"
+        or subevent == "SPELL_STOLEN" then
+            if sourceGUID == playerGUID or sourceGUID == petGUID then
                 local icon = select(3, GetSpellInfo(extraArg4)) or defaultIcon
-                msgFrame:AddMessage(format("%s: " .. "|T" .. icon .. ":0|t" .. "%s", action, GetSpellLink(extraArg4)))
+                msgFrame:AddMessage(format("%s: " .. "|T" .. icon .. ":0|t" .. "%s", ACTION_TYPE[subevent], GetSpellLink(extraArg4)))
             end
         end
     elseif event == "PLAYER_LOGIN" then
         playerGUID = UnitGUID("player")
+        petGUID = UnitGUID("pet")
         defaultIcon = select(3, GetSpellInfo(5024)) -- Chicken Icon
         groundingTotemNameLocalized = GetSpellInfo(204336)
         SetupMessageFrame()
