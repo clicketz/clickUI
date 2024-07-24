@@ -3,6 +3,7 @@ local COMBATLOG_OBJECT_TYPE_GUARDIAN = COMBATLOG_OBJECT_TYPE_GUARDIAN
 local COMBATLOG_OBJECT_REACTION_HOSTILE = COMBATLOG_OBJECT_REACTION_HOSTILE
 local bit_band = bit.band
 local playerGUID, petGUID, defaultIcon, groundingTotemNameLocalized, msgFrame
+local GetSpellLink = C_Spell.GetSpellLink
 
 -- This will show if the player gets attacked into this type
 -- e.g. player immunes a cast with ice block
