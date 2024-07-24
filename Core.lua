@@ -23,16 +23,28 @@ eventFrame:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
 local hiddenFrame = CreateFrame("Frame")
 hiddenFrame:SetScript("OnShow", hiddenFrame.Hide)
 
+local function hide(frame)
+    frame:SetParent(hiddenFrame)
+    hiddenFrame:Hide()
+end
+
 eventFrame:SetScript("OnEvent", function(self)
     local arenaFrame = _G["CompactArenaFrame"]
 
     if arenaFrame and not arenaFrame.hooked then
-        arenaFrame:SetParent(hiddenFrame)
-        hiddenFrame:Hide()
+        hide(arenaFrame)
 
         arenaFrame.hooked = arenaFrame:HookScript("OnShow", function(af)
-            af:SetParent(hiddenFrame)
-            hiddenFrame:Hide()
+            local combat = InCombatLockdown()
+
+            if not combat then
+                hide(af)
+            else
+                af:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+                    hide(af)
+                    af:UnregisterEvent("PLAYER_REGEN_ENABLED")
+                end)
+            end
         end)
 
         if arenaFrame.hooked then
@@ -812,23 +824,23 @@ EventRegistry:RegisterFrameEventAndCallback('PLAYER_LOGIN', function()
 end)
 
 -- Temporary fix for 10.2.6 chat channel bug
-EventRegistry:RegisterFrameEventAndCallback('PLAYER_ENTERING_WORLD', function()
-    for i = 1, NUM_CHAT_WINDOWS do
-        local frame = _G["ChatFrame" .. i]
+-- EventRegistry:RegisterFrameEventAndCallback('PLAYER_ENTERING_WORLD', function()
+--     for i = 1, NUM_CHAT_WINDOWS do
+--         local frame = _G["ChatFrame" .. i]
 
-        if frame and frame.isDocked then
-            if i == 1 then
-                ChatFrame_RemoveChannel(frame, "Services")
-            elseif frame.name == "services" then
-                ChatFrame_RemoveChannel(frame, "General")
-                ChatFrame_RemoveChannel(frame, "Trade")
-                ChatFrame_RemoveChannel(frame, "LocalDefense")
-            else
-                ChatFrame_RemoveChannel(frame, "General")
-                ChatFrame_RemoveChannel(frame, "Trade")
-                ChatFrame_RemoveChannel(frame, "LocalDefense")
-                ChatFrame_RemoveChannel(frame, "Services")
-            end
-        end
-    end
-end)
+--         if frame and frame.isDocked then
+--             if i == 1 then
+--                 ChatFrame_RemoveChannel(frame, "Services")
+--             elseif frame.name == "services" then
+--                 ChatFrame_RemoveChannel(frame, "General")
+--                 ChatFrame_RemoveChannel(frame, "Trade")
+--                 ChatFrame_RemoveChannel(frame, "LocalDefense")
+--             else
+--                 ChatFrame_RemoveChannel(frame, "General")
+--                 ChatFrame_RemoveChannel(frame, "Trade")
+--                 ChatFrame_RemoveChannel(frame, "LocalDefense")
+--                 ChatFrame_RemoveChannel(frame, "Services")
+--             end
+--         end
+--     end
+-- end)
