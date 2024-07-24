@@ -1,5 +1,5 @@
 ## Title: !|cFF00A6FFclick|rUI
-## Interface: 100207
+## Interface: 110000
 ## Notes: Mainly a default frame beautification AddOn -- also includes random UI optimization scripts.
 ## Author: clicket
 ## IconTexture: Interface\AddOns\!clickUI\Media\logo
