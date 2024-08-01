@@ -405,7 +405,7 @@ else
     -- BigDebuffs Player Portrait Fix
     C_Timer.After(0, function()
         C_Timer.After(0, function()
-            if IsAddOnLoaded("BigDebuffs") then
+            if C_AddOns.IsAddOnLoaded("BigDebuffs") then
                 BigDebuffsplayerUnitFrame:SetScript("OnShow", function(self)
                     self:SetScale(PlayerFrame.PlayerFrameContainer.PlayerPortrait:GetScale())
                     self:SetAllPoints(PlayerFrame.PlayerFrameContainer.PlayerPortrait)
