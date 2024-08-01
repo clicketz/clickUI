@@ -43,7 +43,7 @@ end
 
 --Player Frame Edits ***(ENABLE IF EASYFRAMES IS DISABLED)***
 do
-    if not select(4, GetAddOnInfo("EasyFrames")) then
+    if not select(4, C_AddOns.GetAddOnInfo("EasyFrames")) then
         if isClassic then
             PlayerFrameGroupIndicator:ClearAllPoints()
             PlayerFrameGroupIndicator:SetPoint("TOPLEFT", 34, 15)

@@ -5,6 +5,22 @@ local bit_band = bit.band
 local playerGUID, petGUID, defaultIcon, groundingTotemNameLocalized, msgFrame
 local GetSpellLink = C_Spell.GetSpellLink
 
+local GetSpellInfo = function(spellID)
+    if not spellID then
+        return nil
+    end
+
+    -- Classic flavors still use old GetSpellInfo
+    if GetSpellInfo then
+        return GetSpellInfo(spellID)
+    end
+
+    local spellInfo = C_Spell.GetSpellInfo(spellID)
+    if spellInfo then
+        return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
+    end
+end
+
 -- This will show if the player gets attacked into this type
 -- e.g. player immunes a cast with ice block
 local MISS_TYPE_DEST = {
