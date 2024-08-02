@@ -115,8 +115,9 @@ end
 
 -- Raid Frame Name
 hooksecurefunc("CompactUnitFrame_UpdateName", function(self)
-    if self.name and (not self:IsForbidden()) and self.name:IsVisible() then
-        self.name:Hide()
+    local name = self.cleanName or self.name
+    if name and (not self:IsForbidden()) and name:IsVisible() then
+        name:Hide()
     end
 end)
 
