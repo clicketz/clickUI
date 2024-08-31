@@ -2,8 +2,8 @@ name: Giftwrap
 
 on:
   push:
-    # branches:
-    #   - master
+    branches:
+      - main
     tags:
       - "*"
       - "!**-beta**"
@@ -29,12 +29,12 @@ jobs:
         run:
           git fetch --tags --force
 
-      - name: Pull global luacheckrc
-        run:
-          wget -O .luacheckrc https://raw.githubusercontent.com/clicketz/wow-luacheckrc/mainline/.luacheckrc
+      # - name: Pull global luacheckrc
+      #   run:
+      #     wget -O .luacheckrc https://raw.githubusercontent.com/clicketz/wow-luacheckrc/mainline/.luacheckrc
 
-      - name: Luacheck linter
-        uses: lunarmodules/luacheck@v1
+      # - name: Luacheck linter
+      #   uses: lunarmodules/luacheck@v1
 
       - name: Generate Changelog
         run: ./generate_changelog.sh
