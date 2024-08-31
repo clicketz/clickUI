@@ -5,6 +5,12 @@ local bit_band = bit.band
 local playerGUID, petGUID, defaultIcon, groundingTotemNameLocalized, msgFrame
 local GetSpellLink = C_Spell.GetSpellLink
 
+-- Local ignore list for spells you wish to ignore.
+-- TODO: Add to a database
+local ignore = {
+    [370898] = true, -- Permeating Chill
+}
+
 local GetSpellInfo = function(spellID)
     if not spellID then
         return nil
@@ -76,6 +82,11 @@ f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function(self, event)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, extraArg1, extraArg2, extraArg3, extraArg4, extraArg5, extraArg6, extraArg7, extraArg8, extraArg9, extraArg10 = CombatLogGetCurrentEventInfo()
+
+        if ignore[extraArg1]
+        or ignore[extraArg4] then
+            return
+        end
 
         -- Fade / Immunities / Reflects / Etc
         if subevent == "SPELL_MISSED" then
