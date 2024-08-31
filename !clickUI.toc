@@ -6,7 +6,7 @@
 ## Version: @project-version@
 ## Revision: @project-abbreviated-hash@
 
-Libs\TaintLess.xml
+Libs\TaintLess\TaintLess.xml
 
 Core.lua
 
