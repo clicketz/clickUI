@@ -3,7 +3,7 @@ package-as: !clickUI
 enable-nolib-creation: no
 
 externals:
-  TaintLess:
+  Libs/TaintLess:
     url: https://www.townlong-yak.com/addons.git/taintless
     commit: default
 
