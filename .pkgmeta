@@ -2,7 +2,10 @@ package-as: !clickUI
 
 enable-nolib-creation: no
 
-#externals:
+externals:
+  TaintLess:
+    url: https://www.townlong-yak.com/addons.git/taintless
+    commit: default
 
 manual-changelog:
   filename: CHANGELOG.md
