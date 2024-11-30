@@ -145,7 +145,7 @@ function addon:ReportPurchases(entryIDs)
             local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
             if definitionInfo and (definitionInfo.spellID or definitionInfo.overriddenSpellID) then
                 local spellID = definitionInfo.spellID or definitionInfo.overriddenSpellID
-                local spellLink = GetSpellLink(spellID)
+                local spellLink = C_Spell.GetSpellLink(spellID)
                 if spellLink then
                     table.insert(spellLinks, spellLink)
                 end
