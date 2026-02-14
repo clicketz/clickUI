@@ -419,9 +419,9 @@ else
     end)
 
     -- Remove Group Border Frames
-    PlayerFrameGroupIndicatorLeft:SetAlpha(0)
-    PlayerFrameGroupIndicatorMiddle:SetAlpha(0)
-    PlayerFrameGroupIndicatorRight:SetAlpha(0)
+    -- PlayerFrameGroupIndicatorLeft:SetAlpha(0)
+    -- PlayerFrameGroupIndicatorMiddle:SetAlpha(0)
+    -- PlayerFrameGroupIndicatorRight:SetAlpha(0)
 
     frame:SetScript("OnEvent", eventHandler)
 end

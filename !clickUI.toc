@@ -1,5 +1,5 @@
 ## Title: !|cFF00A6FFclick|rUI
-## Interface: 110005
+## Interface: 120000, 120001
 ## Notes: Mainly a default frame beautification AddOn -- also includes random UI optimization scripts.
 ## Author: clicket
 ## IconTexture: Interface\AddOns\!clickUI\Media\logo
@@ -10,18 +10,18 @@ Libs\TaintLess\TaintLess.xml
 
 Core.lua
 
-Modules\AutoPurchaseDragonRidingTalents.lua
+# Modules\AutoPurchaseDragonRidingTalents.lua
 # Modules\EasyDelete.lua
 # Modules\FastLoot.lua
-Modules\Frames.lua
-Modules\Grid.lua
+# Modules\Frames.lua
+# Modules\Grid.lua
 # Modules\HideText.lua
 # Modules\LoadMoreDebuffs.lua
-Modules\LossOfControl.lua
+# Modules\LossOfControl.lua
 # Modules\ObjectiveTracker.lua
 # Modules\RaidFrames.lua
 # Modules\SafeQueue.lua
-Modules\SpellNotifications.lua
+# Modules\SpellNotifications.lua
 # Modules\Stats.lua
 # Modules\Test.lua
 # Modules\UnitFrames.lua

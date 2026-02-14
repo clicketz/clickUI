@@ -72,6 +72,7 @@ _G.UIErrorsFrame:SetScale(1.3)
 -- self:SetScale(0.6)
 -- end)
 
+-- QueueStatusIcon
 hooksecurefunc(_G.QueueStatusButton, "SetPoint", function(self, point, relativeFrame, relativePoint, x, y)
     if y ~= -290 then
         self:ClearAllPoints()
@@ -115,6 +116,9 @@ end
 
 -- Raid Frame Name
 hooksecurefunc("CompactUnitFrame_UpdateName", function(self)
+    -- Filter out nameplates
+    if string.match(self.displayedUnit, "^nameplate") then return end
+
     local name = self.cleanName or self.name
     if name and (not self:IsForbidden()) and name:IsVisible() then
         name:Hide()
@@ -184,16 +188,16 @@ _G.PetFrame.name:Hide()
 -- end)
 
 --Remove Pet Border on Raid Frames
-for i = 1, 5 do
-    local frame = _G["CompactPartyFramePet" .. i]
+-- for i = 1, 5 do
+-- local frame = _G["CompactPartyFramePet" .. i]
 
-    if frame then
-        frame.horizBottomBorder:SetAlpha(0)
-        frame.horizTopBorder:SetAlpha(0)
-        frame.vertLeftBorder:SetAlpha(0)
-        frame.vertRightBorder:SetAlpha(0)
-    end
-end
+-- if frame then
+-- frame.horizBottomBorder:SetAlpha(0)
+-- frame.horizTopBorder:SetAlpha(0)
+-- frame.vertLeftBorder:SetAlpha(0)
+-- frame.vertRightBorder:SetAlpha(0)
+-- end
+-- end
 
 -- for i = 1, 40 do
 -- local frame = _G["CompactRaidFrame" .. i]
@@ -845,3 +849,27 @@ end)
 --         end
 --     end
 -- end)
+
+-------------------------------------------------------
+-- A dummy frame to use events
+-------------------------------------------------------
+local dummyFrame = CreateFrame("FRAME", nil, UIParent);
+
+-------------------------------------------------------
+-- Register the event to handle vehicle states
+-------------------------------------------------------
+dummyFrame:RegisterEvent("UNIT_ENTERED_VEHICLE");
+
+-------------------------------------------------------
+-- The function that gets invoked when the event fires
+-------------------------------------------------------
+function dummyFrame:OnEvent(event)
+    if event == "UNIT_ENTERED_VEHICLE" then
+        SetCVar("TurnSpeed", TurnSpeedValue or 999)
+    end
+end
+
+-------------------------------------------------------
+-- The frame subscribes to the event
+-------------------------------------------------------
+dummyFrame:SetScript("OnEvent", dummyFrame.OnEvent);
