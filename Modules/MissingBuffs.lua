@@ -59,7 +59,7 @@ else
     end
 end
 
-local displayTexture = playerClass == "EVOKER" and C_Spell.GetSpellTexture(381748) or C_Spell.GetSpellTexture(myBuffSpells[1])
+local displayTexture = C_Spell.GetSpellTexture(myBuffSpells[1])
 
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     local unit = frame.unit
