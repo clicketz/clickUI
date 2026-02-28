@@ -11,6 +11,9 @@ local math_max = math.max
 local math_floor = math.floor
 local strmatch = string.match
 
+-- NPC raid buffs (e.g. 432661) haven't been whitelisted yet by Blizzard
+-- so they will return nil when queried by GetUnitAuraBySpellID. Not going
+-- to workaround in hopes that Blizzard fixes.
 local RAID_BUFFS = {
     MAGE = { 1459, 432778 },
     WARRIOR = { 6673 },
