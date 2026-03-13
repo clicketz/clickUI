@@ -10,6 +10,7 @@ local GetUnitAuraBySpellID = C_UnitAuras.GetUnitAuraBySpellID
 local math_max = math.max
 local math_floor = math.floor
 local strmatch = string.match
+local pcall = pcall
 
 -- NPC raid buffs (e.g. 432661) haven't been whitelisted yet by Blizzard
 -- so they will return nil when queried by GetUnitAuraBySpellID. Not going
@@ -64,6 +65,20 @@ end
 
 local displayTexture = C_Spell.GetSpellTexture(myBuffSpells[1])
 
+-- sandbox frameHeight calculations since it can be a secret value
+local function GetSafeIconSize(frame)
+    local height = frame:GetHeight()
+
+    local success, result = pcall(function() return height * size end)
+
+    if success then
+        frame._missingBuffCachedSize = result
+        return math_max(12, math_floor(result))
+    end
+
+    return math_max(12, math_floor(frame._missingBuffCachedSize or (40 * size)))
+end
+
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     local unit = frame.unit
 
@@ -93,8 +108,7 @@ hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
         frame.MissingBuffIndicator = indicator
     end
 
-    local frameHeight = frame:GetHeight() or 40
-    local iconSize = math_max(12, math_floor(frameHeight * size))
+    local iconSize = GetSafeIconSize(frame)
 
     if frame.MissingBuffIndicator._currentSize ~= iconSize then
         frame.MissingBuffIndicator:SetSize(iconSize, iconSize)
