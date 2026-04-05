@@ -10,7 +10,8 @@ Libs\TaintLess\TaintLess.xml
 
 Core.lua
 
-Modules\MissingBuffs.lua
+Modules\Surrender.lua
+# Modules\MissingBuffs.lua
 # Modules\AutoPurchaseDragonRidingTalents.lua
 # Modules\EasyDelete.lua
 # Modules\FastLoot.lua
