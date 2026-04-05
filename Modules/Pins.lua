@@ -40,6 +40,8 @@ local function BuildLocalizedSpecTable()
 end
 
 local function GetSpecIDFromTooltip(unit, guid, isSafeGUID)
+    if not isSafeGUID then return nil end
+
     if not C_TooltipInfo or not C_TooltipInfo.GetUnit then
         return nil
     end
@@ -50,13 +52,14 @@ local function GetSpecIDFromTooltip(unit, guid, isSafeGUID)
     end
 
     for _, line in ipairs(tooltipData.lines) do
-        if line and line.leftText and line.leftText ~= "" then
-            local specID = localizedSpecs[line.leftText]
-            if specID then
-                if isSafeGUID then
+        if line and line.leftText then
+            local isSecret = issecretvalue(line.leftText)
+            if not isSecret and line.leftText ~= "" then
+                local specID = localizedSpecs[line.leftText]
+                if specID then
                     specCache[guid] = specID
+                    return specID
                 end
-                return specID
             end
         end
     end
