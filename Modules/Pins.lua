@@ -1,28 +1,24 @@
--- Architectural Thought Process:
--- We can implement the lazy check by declaring `local Internal` at the top of the file, then assigning it inside the `OnLogin` event handler only if the `Platynator` global table exists.
--- For replacing the name with the Arena ID, we can borrow BBP's approach of checking `UnitIsUnit(unit, "arena" .. i)`.
--- Instead of fighting Platynator's internal `CreatureTextMixin` update cycles to force the text change, we can neatly leverage Platynator's own globally exposed `Platynator.API.SetUnitTextOverride(unit, name, guild)`. This natively handles the text replacement and broadcasts the update cleanly. We apply it when processing the `ClassMarkerMixin:SetUnit` cycle and wipe it to `nil` when the unit is not an arena opponent.
-
 local Internal
 
 local classMap = {
     ["DEATHKNIGHT"] = "DeathKnight",
     ["DEMONHUNTER"] = "DemonHunter",
-    ["DRUID"] = "Druid",
-    ["EVOKER"] = "Evoker",
-    ["HUNTER"] = "Hunter",
-    ["PALADIN"] = "Paladin",
-    ["PRIEST"] = "Priest",
-    ["ROGUE"] = "Rogue",
-    ["MAGE"] = "Mage",
-    ["SHAMAN"] = "Shaman",
-    ["WARRIOR"] = "Warrior",
-    ["MONK"] = "Monk",
-    ["WARLOCK"] = "Warlock",
+    ["DRUID"]       = "Druid",
+    ["EVOKER"]      = "Evoker",
+    ["HUNTER"]      = "Hunter",
+    ["PALADIN"]     = "Paladin",
+    ["PRIEST"]      = "Priest",
+    ["ROGUE"]       = "Rogue",
+    ["MAGE"]        = "Mage",
+    ["SHAMAN"]      = "Shaman",
+    ["WARRIOR"]     = "Warrior",
+    ["MONK"]        = "Monk",
+    ["WARLOCK"]     = "Warlock",
 }
 
 local localizedSpecs = {}
 local specCache = {}
+local plateToArenaID = {}
 
 local function BuildLocalizedSpecTable()
     for classID = 1, GetNumClasses() do
@@ -43,7 +39,7 @@ local function BuildLocalizedSpecTable()
     end
 end
 
-local function GetSpecIDFromTooltip(unit, guid)
+local function GetSpecIDFromTooltip(unit, guid, isSafeGUID)
     if not C_TooltipInfo or not C_TooltipInfo.GetUnit then
         return nil
     end
@@ -57,34 +53,33 @@ local function GetSpecIDFromTooltip(unit, guid)
         if line and line.leftText and line.leftText ~= "" then
             local specID = localizedSpecs[line.leftText]
             if specID then
-                specCache[guid] = specID
+                if isSafeGUID then
+                    specCache[guid] = specID
+                end
                 return specID
             end
         end
     end
-
     return nil
 end
 
 local function GetUnitSpecID(unit)
-    if not Internal.Constants.IsRetail then
-        return nil
-    end
+    if not Internal.Constants.IsRetail then return nil end
 
     local guid = UnitGUID(unit)
-    if not guid then
-        return nil
-    end
+    local isSafeGUID = guid and not issecretvalue(guid)
 
-    if specCache[guid] then
-        return specCache[guid]
+    if isSafeGUID then
+        if specCache[guid] then
+            return specCache[guid]
+        end
     end
 
     if UnitIsUnit(unit, "player") then
         local specIndex = C_SpecializationInfo.GetSpecialization()
         if specIndex then
             local specID = C_SpecializationInfo.GetSpecializationInfo(specIndex)
-            specCache[guid] = specID
+            if isSafeGUID then specCache[guid] = specID end
             return specID
         end
     end
@@ -92,35 +87,54 @@ local function GetUnitSpecID(unit)
     if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) then
         local specID = GetInspectSpecialization(unit)
         if specID and specID > 0 then
-            specCache[guid] = specID
+            if isSafeGUID then specCache[guid] = specID end
             return specID
         end
     end
 
-    if IsActiveBattlefieldArena() then
-        for i = 1, 3 do
-            if UnitIsUnit(unit, "arena" .. i) then
-                local specID = GetArenaOpponentSpec(i)
-                if specID and specID > 0 then
-                    specCache[guid] = specID
-                    return specID
+    local plate = C_NamePlate.GetNamePlateForUnit(unit, issecure())
+    if plate and plateToArenaID[plate] then
+        local specID = GetArenaOpponentSpec(plateToArenaID[plate])
+        if specID and specID > 0 then
+            if isSafeGUID then specCache[guid] = specID end
+            return specID
+        end
+    end
+
+    return GetSpecIDFromTooltip(unit, guid, isSafeGUID)
+end
+
+local function SetupArenaTracker()
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("PLAYER_TARGET_CHANGED")
+    f:RegisterEvent("PLAYER_FOCUS_CHANGED")
+    f:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+    f:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+    f:SetScript("OnEvent", function(self, event, unit)
+        if event == "NAME_PLATE_UNIT_REMOVED" then
+            local plate = C_NamePlate.GetNamePlateForUnit(unit, issecure())
+            if plate then
+                plateToArenaID[plate] = nil
+            end
+            return
+        end
+
+        if not IsActiveBattlefieldArena() then return end
+
+        for _, plate in pairs(C_NamePlate.GetNamePlates(issecure())) do
+            local npUnit = plate.namePlateUnitToken
+            if npUnit then
+                for i = 1, 3 do
+                    local arenaUnit = "arena" .. i
+                    if (UnitIsUnit(npUnit, "target") and UnitIsUnit("target", arenaUnit)) or
+                    (UnitIsUnit(npUnit, "focus") and UnitIsUnit("focus", arenaUnit)) or
+                    (UnitIsUnit(npUnit, "mouseover") and UnitIsUnit("mouseover", arenaUnit)) then
+                        plateToArenaID[plate] = i
+                    end
                 end
             end
         end
-    end
-
-    return GetSpecIDFromTooltip(unit, guid)
-end
-
-local function GetArenaID(unit)
-    if IsActiveBattlefieldArena() then
-        for i = 1, 3 do
-            if UnitIsUnit(unit, "arena" .. i) then
-                return i
-            end
-        end
-    end
-    return nil
+    end)
 end
 
 local function OnLogin()
@@ -128,12 +142,15 @@ local function OnLogin()
     Internal = Platynator.Internal
 
     BuildLocalizedSpecTable()
+    SetupArenaTracker()
 
     Internal.Display.ClassMarkerMixin.SetUnit = function(self, unit)
         self.unit = unit
 
         if unit then
-            local arenaID = GetArenaID(unit)
+            local plate = C_NamePlate.GetNamePlateForUnit(unit, issecure())
+            local arenaID = plate and plateToArenaID[plate]
+
             if arenaID then
                 Platynator.API.SetUnitTextOverride(unit, tostring(arenaID))
             else
