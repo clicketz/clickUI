@@ -30,7 +30,7 @@ local function BuildLocalizedSpecTable()
         local classMale = LOCALIZED_CLASS_NAMES_MALE[class]
         local classFemale = LOCALIZED_CLASS_NAMES_FEMALE[class]
 
-        for specIndex = 1, GetNumSpecializationsForClassID(classID) do
+        for specIndex = 1, C_SpecializationInfo.GetNumSpecializationsForClassID(classID) do
             local specID, specName = GetSpecializationInfoForClassID(classID, specIndex)
 
             if classMale then

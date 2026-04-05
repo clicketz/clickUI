@@ -1,12 +1,11 @@
 local cf = CreateFrame("Frame")
 cf:RegisterEvent("PLAYER_LOGIN")
 cf:SetScript("OnEvent", function(self, event)
-
     local SafeQueue = CreateFrame("Frame")
     local queueTime
     local queue = 0
     local remaining = 0
-    SafeQueueDB = SafeQueueDB or {announce = "self"}
+    SafeQueueDB = SafeQueueDB or { announce = "self" }
 
     PVPReadyDialog.leaveButton:Hide()
     PVPReadyDialog.leaveButton.Show = function()
@@ -42,7 +41,7 @@ cf:SetScript("OnEvent", function(self, event)
             Print(str)
         else
             local group = IsInRaid() and "RAID" or "PARTY"
-            SendChatMessage(str, group)
+            C_ChatInfo.SendChatMessage(str, group)
         end
     end
 
@@ -87,5 +86,4 @@ cf:SetScript("OnEvent", function(self, event)
             end
         end
     )
-
 end)
