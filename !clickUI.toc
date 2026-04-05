@@ -1,5 +1,5 @@
 ## Title: !|cFF00A6FFclick|rUI
-## Interface: 120000, 120001
+## Interface: 120001
 ## Notes: Mainly a default frame beautification AddOn -- also includes random UI optimization scripts.
 ## Author: clicket
 ## IconTexture: Interface\AddOns\!clickUI\Media\logo
@@ -10,6 +10,7 @@ Libs\TaintLess\TaintLess.xml
 
 Core.lua
 
+Modules\KillingBlow.lua
 Modules\Surrender.lua
 # Modules\MissingBuffs.lua
 # Modules\AutoPurchaseDragonRidingTalents.lua
