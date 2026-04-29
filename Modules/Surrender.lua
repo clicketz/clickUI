@@ -29,6 +29,4 @@ local function Init()
     end
 end
 
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_LOGIN")
-frame:SetScript("OnEvent", Init)
+EventRegistry:RegisterFrameEventAndCallback("PLAYER_LOGIN", Init)
